@@ -3,7 +3,7 @@ tensorflow-metal
 pandas 
 gdown
 dvc
-mlflow==2.2.2
+mlflow==2.11
 notebook
 numpy
 matplotlib
