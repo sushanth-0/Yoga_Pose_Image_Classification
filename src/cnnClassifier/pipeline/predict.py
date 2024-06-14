@@ -45,9 +45,8 @@ class PredictionPipeline:
             'virabhadrasana ii', 'virabhadrasana iii', 'virasana',
             'vriksasana', 'vrischikasana', 'yoganidrasana'
         ]
-        self.model = load_model(os.path.join(
-            "artifacts", "training", "model.h5"))
-        # self.model = load_model(os.path.join("model", "model.h5"))
+        # self.model = load_model(os.path.join("artifacts", "training", "model.h5"))
+        self.model = load_model(os.path.join("final_model", "model.h5"))
 
     def predict(self):
         try:
