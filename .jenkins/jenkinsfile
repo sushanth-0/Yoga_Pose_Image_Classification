@@ -1,16 +1,9 @@
-https://raw.githubusercontent.com/sushanth-0/Yoga_Pose_Image_Classification/main/docker-compose.yml?token=GHSAT0AAAAAACS6KZL6AEUNAICN3KVTILJCZTMQDLA
-
-
-
 pipeline {
   agent any
   environment {
-    ECR_REPOSITORY = credentials('ECR_REPOSITORY')
-    AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
-    AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+    AWS_REGION = 'us-east-1'
   }
-  
+
   stages {
     stage('Continuous Integration') {
       steps {
@@ -23,35 +16,54 @@ pipeline {
 
     stage('Login to ECR') {
       steps {
-        script {
-          sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com'
+        withCredentials([string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+                         string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                         string(credentialsId: 'ECR_REPOSITORY', variable: 'ECR_REPOSITORY'),
+                         string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID')]) {
+          script {
+            sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com'
+          }
         }
-
       }
     }
 
     stage('Build Image') {
       steps {
-        script {
-          sh 'docker build -t ${ECR_REPOSITORY}:latest .'
+        withCredentials([string(credentialsId: 'ECR_REPOSITORY', variable: 'ECR_REPOSITORY')]) {
+          script {
+            sh 'docker build -t ${ECR_REPOSITORY}:latest .'
+          }
         }
-
       }
     }
 
     stage('Push Image') {
       steps {
-        script {
-          sh 'docker push ${ECR_REPOSITORY}:latest'
+        withCredentials([string(credentialsId: 'ECR_REPOSITORY', variable: 'ECR_REPOSITORY')]) {
+          script {
+            sh 'docker push ${ECR_REPOSITORY}:latest'
+          }
         }
-
       }
     }
 
     stage('Continuous Deployment') {
       steps {
         sshagent(['ssh_key']) {
-          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 52.203.49.148 'cd /home/ubuntu/ && wget https://raw.githubusercontent.com/sushanth-0/Yoga_Pose_Image_Classification/main/docker-compose.yml && export IMAGE_NAME=${ECR_REPOSITORY}:latest && aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com && docker compose up -d '"
+          withCredentials([string(credentialsId: 'ECR_REPOSITORY', variable: 'ECR_REPOSITORY'),
+                           string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID')]) {
+            script {
+              sh """
+                ssh -o StrictHostKeyChecking=no -l ubuntu 52.203.49.148 << 'EOF'
+                cd /home/ubuntu/
+                wget https://raw.githubusercontent.com/sushanth-0/Yoga_Pose_Image_Classification/main/docker-compose.yml
+                export IMAGE_NAME=${ECR_REPOSITORY}:latest
+                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                docker compose up -d
+                EOF
+              """
+            }
+          }
         }
       }
     }
