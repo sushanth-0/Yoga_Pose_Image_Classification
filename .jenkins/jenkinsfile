@@ -16,7 +16,7 @@ pipeline {
       steps {
         script {
           echo "Linting repository"
-          echo "Running unit tests"
+          echo "Running units tests"
         }
       }
     }
