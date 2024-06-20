@@ -92,6 +92,7 @@ python app.py
 export MLFLOW_TRACKING_URI= MLFLOW_TRACKING_URI
 export MLFLOW_TRACKING_USERNAME= MLFLOW_TRACKING_USERNAME
 export MLFLOW_TRACKING_PASSWORD= MLFLOW_TRACKING_PASSWORD
+```
 
 - **DVC**:
   - Integrated Data Version Control (DVC) in the data ingestion component to manage large datasets efficiently by providing a Git-like interface for data versioning.
