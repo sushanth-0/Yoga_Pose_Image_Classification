@@ -88,8 +88,7 @@ python app.py
 - **MLflow**:
   - Integrated MLflow in the model trainer and evaluator components to track experiments and manage models effectively.
 
-  ```bash
-
+```bash
 export MLFLOW_TRACKING_URI= MLFLOW_TRACKING_URI
 export MLFLOW_TRACKING_USERNAME= MLFLOW_TRACKING_USERNAME
 export MLFLOW_TRACKING_PASSWORD= MLFLOW_TRACKING_PASSWORD
