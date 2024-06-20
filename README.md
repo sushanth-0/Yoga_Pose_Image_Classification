@@ -30,6 +30,7 @@ I have developed an end-to-end state-of-the-art pipeline for a computer vision p
 
 - **Programming Language**: Python
 - **Deep Learning Framework**: TensorFlow, Keras
+- **Web Framework**: Flask
 - **Pre-trained Model**: VGG16
 - **Data Management**: gdown, DVC
 - **Experiment Tracking**: MLflow
@@ -157,3 +158,7 @@ export AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
 4. **Model Evaluation Pipeline**: 
     - Evaluates the trained model and logs metrics to MLflow.
     - Configuration and execution in `evaluation_pipeline.py`.
+
+5. **Prediction Pipeline**:
+    - Built a **Flask** web application to serve the model predictions.
+    - Handles image inputs for classification and returns the prediction results.
